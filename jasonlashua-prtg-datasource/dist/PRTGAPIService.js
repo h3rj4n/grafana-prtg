@@ -35,8 +35,8 @@ System.register(["angular", "lodash", "./utils", "./xmlparser"], function (_expo
       /**
        * Tests whether a url has been stored in the cache.
        * Returns boolean true | false
-       * 
-       * @param url 
+       *
+       * @param url
        * @return boolean
        */
 
@@ -387,6 +387,11 @@ System.register(["angular", "lodash", "./utils", "./xmlparser"], function (_expo
             avg = "86400";
           }
 
+          if (new Date().getTimezoneOffset() < 0 || new Date().getTimezoneOffset() > 0) {
+            dateFrom = dateFrom + new Date().getTimezoneOffset() * 60;
+            dateTo = dateTo + new Date().getTimezoneOffset() * 60;
+          }
+
           var method = "historicdata.xml";
           var params = "id=" + sensor + "&sdate=" + this.getPRTGDate(dateFrom) + "&edate=" + this.getPRTGDate(dateTo) + "&avg=" + avg + "&pctshow=false&pctmode=false";
           /*
@@ -410,7 +415,7 @@ System.register(["angular", "lodash", "./utils", "./xmlparser"], function (_expo
                 if (testdata.value_raw[idx].channel.match(channel + " [(]speed[)]") || testdata.value_raw[idx].channel == channel) {
                   chanIndex = idx;
                 }
-                // 
+                //
                 else {
                     var rex = new RegExp(utils.escapeRegex(channel), 'g');
                     if (rex.test(testdata.value_raw[idx].channel)) {

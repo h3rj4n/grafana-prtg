@@ -24,8 +24,8 @@ function PRTGAPIService(alertSrv, backendSrv) {
     /**
      * Tests whether a url has been stored in the cache.
      * Returns boolean true | false
-     * 
-     * @param url 
+     *
+     * @param url
      * @return boolean
      */
     inCache(url) {
@@ -92,7 +92,7 @@ function PRTGAPIService(alertSrv, backendSrv) {
     /**
      * convert a UNIX timestamp into a PRTG date string for queries
      * YYYY-MM-DD-HH-MM-SS
-     * 
+     *
      * @param unixtime UNIX format timestamp
      */
     getPRTGDate(unixtime) {
@@ -186,7 +186,7 @@ function PRTGAPIService(alertSrv, backendSrv) {
 
     /**
      * Only used in connection testing
-     * 
+     *
      * @return Promise
      */
     getVersion() {
@@ -202,7 +202,7 @@ function PRTGAPIService(alertSrv, backendSrv) {
     /**
      * Authenticate to the PRTG interface
      * Only used in connection testing because PRTG API is sessionless.
-     * 
+     *
      * @return Promise
      */
     performPRTGAPILogin() {
@@ -259,16 +259,16 @@ function PRTGAPIService(alertSrv, backendSrv) {
       if (deviceFilter) {
         params += deviceFilter;
       }
-        
+
       return this.performPRTGAPIRequest("table.json", params);
     }
 
     /**
-     * Filter a PRTG collection against a filter string 
-     * 
-     * @param {collection} items - PRTG Data object 
+     * Filter a PRTG collection against a filter string
+     *
+     * @param {collection} items - PRTG Data object
      * @param {string} queryStr - Query filter, raw string, comma separated strings, or regular expression pattern
-     * @param {boolean} invert - when set to boolean true, negates the return value. 
+     * @param {boolean} invert - when set to boolean true, negates the return value.
      * @return {boolean} result of text expression
      */
     filterQuery(items, queryStr, invert = false) {
@@ -326,7 +326,7 @@ function PRTGAPIService(alertSrv, backendSrv) {
 
     /**
      * Retrive groups and filter with an optional filter string
-     * 
+     *
      * @param {string} groupFilter - raw string, comma separated strings, or regular expression pattern
      * @return {collection} - filtered PRTG data object
      */
@@ -338,7 +338,7 @@ function PRTGAPIService(alertSrv, backendSrv) {
 
     /**
      * Retrieve hosts and filter with an optional filter string.
-     * 
+     *
      * @param {*} groupFilter - raw string, comma separated strings, or regular expression pattern
      * @param {*} hostFilter - raw string, comma separated strings, or regular expression pattern
      * @return {collection} - filtered PRTG data object
@@ -367,7 +367,7 @@ function PRTGAPIService(alertSrv, backendSrv) {
 
     /**
      * Retrieve sensors and filter with an optional filter string.
-     * 
+     *
      * @param {string} groupFilter - raw string, comma separated strings, or regular expression pattern
      * @param {string} hostFilter - raw string, comma separated strings, or regular expression pattern
      * @param {string} sensorFilter - raw string, comma separated strings, or regular expression pattern
@@ -399,10 +399,10 @@ function PRTGAPIService(alertSrv, backendSrv) {
 
     /**
      * Retrieve full data object with channel definitions using an optional filter string
-     * 
-     * @param {*} groupFilter - raw string, comma separated strings, or regular expression pattern 
-     * @param {*} hostFilter - raw string, comma separated strings, or regular expression pattern 
-     * @param {*} sensorFilter - raw string, comma separated strings, or regular expression pattern 
+     *
+     * @param {*} groupFilter - raw string, comma separated strings, or regular expression pattern
+     * @param {*} hostFilter - raw string, comma separated strings, or regular expression pattern
+     * @param {*} sensorFilter - raw string, comma separated strings, or regular expression pattern
      * @return {collection} - PRTG data object with channel and sensor properties
      */
     getAllItems(
@@ -451,9 +451,9 @@ function PRTGAPIService(alertSrv, backendSrv) {
     /**
      * Retrieve full data object with channel definitions using an optional filter string.
      * The results are then filtered against a channelFilter expression.
-     * 
-     * @param {string} groupFilter - raw string, comma separated strings, or regular expression patter 
-     * @param {string} deviceFilter - raw string, comma separated strings, or regular expression patter 
+     *
+     * @param {string} groupFilter - raw string, comma separated strings, or regular expression patter
+     * @param {string} deviceFilter - raw string, comma separated strings, or regular expression patter
      * @param {string} sensorFilter - raw string, comma separated strings, or regular expression pattern
      * @param {string} channelFilter - raw string, comma separated strings, or regular expression pattern
      * @param {boolean} invertChannelFilter - if set to boolean true, negates the result of the channelFilter expression
@@ -518,6 +518,11 @@ function PRTGAPIService(alertSrv, backendSrv) {
         avg = "86400";
       }
 
+      if (new Date().getTimezoneOffset() < 0 || new Date().getTimezoneOffset() > 0) {
+        dateFrom = dateFrom + (new Date().getTimezoneOffset() * 60);
+        dateTo = dateTo + (new Date().getTimezoneOffset() * 60);
+      }
+
       const method = "historicdata.xml";
       const params =
         "id=" +
@@ -543,7 +548,7 @@ function PRTGAPIService(alertSrv, backendSrv) {
         const testdata = results.histdata.item[0];
         let chanIndex = 0;
 
-          
+
         if (
           testdata.value_raw &&
           testdata.value_raw.length > 0
@@ -556,17 +561,17 @@ function PRTGAPIService(alertSrv, backendSrv) {
             {
               chanIndex = idx;
             }
-            // 
+            //
             else
             {
               let rex = new RegExp(utils.escapeRegex(channel), 'g');
               if (rex.test(testdata.value_raw[idx].channel)) {
                 chanIndex = idx;
               }
-            } 
+            }
           }
         }
-        
+
 
         for (let iter = 0; iter < rCnt; iter++) {
           let val;
@@ -614,10 +619,10 @@ function PRTGAPIService(alertSrv, backendSrv) {
 
     /**
      * Retrieve messages for a given sensor. Used only for annotation queries.
-     * 
+     *
      * @param {number} from - Earliest time in range
      * @param {number} to - Latest time in range
-     * @param {number} sensorId - Numeric ID of Sensor 
+     * @param {number} sensorId - Numeric ID of Sensor
      */
     getMessages(from, to, sensorId) {
       const method = "table.json";
